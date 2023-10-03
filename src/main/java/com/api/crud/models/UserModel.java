@@ -11,6 +11,7 @@ import java.util.Date;
 @Entity
 @Table(name = "user")
 @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +31,8 @@ public class UserModel {
     private String contraseña;
     @Column
     private String email;
+
+
+
 
 }

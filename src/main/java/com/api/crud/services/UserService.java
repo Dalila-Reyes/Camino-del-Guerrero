@@ -16,6 +16,10 @@ public class UserService {
     @Autowired
     IUserRepository userRepository;
 
+    public UserModel findByemail(String email){
+        return userRepository.findByemail(email);
+    }
+
     public ArrayList<UserModel>  getUsers(){
 
         return (ArrayList<UserModel>) userRepository.findAll();

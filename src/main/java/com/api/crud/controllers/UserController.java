@@ -4,6 +4,8 @@ import com.api.crud.models.UserModel;
 import com.api.crud.services.UserService;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
@@ -17,6 +19,26 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserModel user) {
+
+        UserModel userDB = userService.findByemail(user.getEmail());
+        // Realiza la autenticación del usuario aquí (por ejemplo, verifica las credenciales)
+        if (userDB != null
+                &&
+                userDB.getContraseña().equals(user.getContraseña())) {
+
+            // Usuario autenticado correctamente
+            // Genera un token de sesión y envíalo al frontend
+            String token = "123456789"; // Debe ser único
+            return ResponseEntity.ok(token);
+        } else {
+            // Autenticación fallida
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Autenticación fallida");
+        }
+    }
+
     @GetMapping
     public ArrayList<UserModel> getUsers(){
 
