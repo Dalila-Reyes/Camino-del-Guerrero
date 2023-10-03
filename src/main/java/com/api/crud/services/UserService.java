@@ -32,11 +32,18 @@ public class UserService {
     public  UserModel updateById(UserModel  request ,Integer id){
         UserModel user = userRepository.findById(id).get();
 
-                user.setFirst_name(request.getFirst_name());
-                user.setLastname(request.getLastname());
-                user.setEmail(request.getEmail());
 
-                        return user;
+
+
+
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
+//        user.setEmail(request.getEmail());
+//        user.setPhone(request.getPhone());
+//        user.setAge(request.getAge());
+//        user.setContraseña(request.getContraseña());
+
+        return user;
 
     }
     public Boolean deleteUser (Integer id){

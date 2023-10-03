@@ -1,63 +1,34 @@
 package com.api.crud.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "user")
-
+@Getter @Setter
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    private String firsName;
+    private String firstName;
     @Column
     private String lastName;
 
     @Column
-    private Integer age;
+    private Date birthDate;
 
+    @Column
+    private String phone;
 
+    @Column
+    private String contraseña;
     @Column
     private String email;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getFirst_name() {
-        return firsName;
-    }
-
-    public void setFirst_name(String firsName) {
-        this.firsName = firsName;
-    }
-
-    public String getLastname() {
-        return lastName;
-    }
-
-    public void setLastname(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
