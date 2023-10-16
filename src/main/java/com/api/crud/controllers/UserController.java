@@ -14,14 +14,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 
 public class UserController {
+
     @Autowired
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserModel user) {
+    public ResponseEntity<UserModel> login(@RequestBody UserModel user) {
 
         UserModel userDB = userService.findByemail(user.getEmail());
         // Realiza la autenticación del usuario aquí (por ejemplo, verifica las credenciales)
@@ -31,11 +32,11 @@ public class UserController {
 
             // Usuario autenticado correctamente
             // Genera un token de sesión y envíalo al frontend
-            String token = "123456789"; // Debe ser único
-            return ResponseEntity.ok(token);
+            // String token = "123456789"; // Debe ser único
+            return ResponseEntity.ok(userDB);
         } else {
             // Autenticación fallida
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Autenticación fallida");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 

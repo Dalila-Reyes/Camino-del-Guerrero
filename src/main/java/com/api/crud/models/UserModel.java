@@ -13,6 +13,8 @@ import java.util.Date;
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 public class UserModel {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
