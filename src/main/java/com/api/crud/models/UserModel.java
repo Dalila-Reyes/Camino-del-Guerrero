@@ -33,8 +33,11 @@ public class UserModel {
     private String contraseña;
     @Column
     private String email;
+    @Column
+    private String profileImage;
 
 
 
 
 }
+

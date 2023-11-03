@@ -7,14 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173/", "http://127.0.0.1:5173/"})
 
 public class UserController {
 
@@ -48,9 +54,28 @@ public class UserController {
 
     @PostMapping
     public UserModel saveUser(@RequestBody UserModel user){
+        String profileImage = saveImageToServer(user.getProfileImage());
 
         return this.userService.saveUser(user);
     }
+
+    private String saveImageToServer(UserModel user) throws IOException {
+        // Define la carpeta de destino en el servidor
+        String uploadDir = "path/to/image/directory";
+
+        // Genera un nombre único para el archivo, por ejemplo, el ID del usuario
+        String uniqueFileName = user.getId() + "_" + user.getProfileImage().getOriginalFilename();
+
+        // Crea el path completo para guardar la imagen
+        String imagePath = uploadDir + File.separator + uniqueFileName;
+
+        // Guarda la imagen en el servidor
+        Path path = Paths.get(imagePath);
+        Files.write(path, user.getProfileImage().getBytes());
+
+        return uniqueFileName;
+    }
+
 
     @GetMapping(path="/{id}")
     public Optional<UserModel> getUserById(@PathVariable Integer id){
