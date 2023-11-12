@@ -1,20 +1,21 @@
 package com.api.crud.controllers;
 
 import com.api.crud.models.UserModel;
+import com.api.crud.services.ServicioDeAlmacenamiento;
+
 import com.api.crud.services.UserService;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -26,6 +27,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    ServicioDeAlmacenamiento servicioDeAlmacenamiento;
+
+
+
 
     @PostMapping("/login")
     public ResponseEntity<UserModel> login(@RequestBody UserModel user) {
@@ -48,43 +55,85 @@ public class UserController {
 
     @GetMapping
     public ArrayList<UserModel> getUsers(){
-
         return this.userService.getUsers();
     }
 
     @PostMapping
-    public UserModel saveUser(@RequestBody UserModel user){
-        String profileImage = saveImageToServer(user.getProfileImage());
+    public ResponseEntity<String> saveUser(@RequestBody UserModel user){
+        this.userService.saveUser(user);
 
-        return this.userService.saveUser(user);
+        String mensaje = """
+                    {
+                        "mensaje": "Datos actualizados con éxito"
+                    }
+                    """;
+        return ResponseEntity.ok().body(mensaje);
     }
 
-    private String saveImageToServer(UserModel user) throws IOException {
-        // Define la carpeta de destino en el servidor
-        String uploadDir = "path/to/image/directory";
 
-        // Genera un nombre único para el archivo, por ejemplo, el ID del usuario
-        String uniqueFileName = user.getId() + "_" + user.getProfileImage().getOriginalFilename();
-
-        // Crea el path completo para guardar la imagen
-        String imagePath = uploadDir + File.separator + uniqueFileName;
-
-        // Guarda la imagen en el servidor
-        Path path = Paths.get(imagePath);
-        Files.write(path, user.getProfileImage().getBytes());
-
-        return uniqueFileName;
-    }
 
 
     @GetMapping(path="/{id}")
     public Optional<UserModel> getUserById(@PathVariable Integer id){
         return this.userService.getById(id);
     }
-    @PutMapping
-    public  UserModel updateUserById(@RequestBody UserModel request, Integer id ) {
-        return this.userService.updateById(request,id);
+
+
+
+
+    @PostMapping(value = "/edit/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateUserById(
+            @PathVariable Integer id,
+            @RequestPart("data") UserModel user,
+            @RequestPart("photo") MultipartFile photo) throws IOException {
+
+
+        if(photo != null){
+            // Guardar la imagen en tu servidor y obtener la ruta
+            String imagePath = saveImage(photo, id);
+            // Actualizar el UserModel con la ruta de la imagen
+            if(!imagePath.isEmpty()){
+                user.setProfileImage(imagePath);
+            }
+            else{
+                userService.saveUser(user);
+                String mensaje = """
+                    {
+                        "status": "Error",
+                        "mensaje": "Elige una foto con tu rostro"
+                    }
+                    """;
+                return ResponseEntity.ok().body(mensaje);
+            }
+        }
+
+        userService.saveUser(user);
+        String mensaje = """
+                    {
+                        "mensaje": "Datos actualizados con éxito"
+                    }
+                    """;
+        return ResponseEntity.ok().body(mensaje);
+
     }
+
+    // Método para guardar la imagen y obtener la ruta
+    private String saveImage(MultipartFile image, Integer id) throws IOException {
+        try {
+            if(servicioDeAlmacenamiento.guardarArchivo(image, id)){
+                return "imagenes/" + id + ".jpg";
+            }else{
+                return "";
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return "";
+    }
+
+
     @DeleteMapping(path  ="/{id}")
     public  String deleteById(@PathVariable("id") Integer id) {
         boolean ok = this.userService.deleteUser(id);
@@ -96,4 +145,22 @@ public class UserController {
             return "Error, we have a problem";
         }
     }
+
+    @GetMapping("/getPhoto/{id}")
+    public ResponseEntity<Resource> getImagen(@PathVariable Integer id) {
+
+        String imagePath = userService.getById(id).get().getProfileImage();
+
+        try {
+            //Resource resource = new ClassPathResource(imagePath);
+            Resource resource = new UrlResource("file:" + "src/main/resources/" + imagePath);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(resource);
+        } catch (Exception e) {
+            // Manejar excepciones
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
