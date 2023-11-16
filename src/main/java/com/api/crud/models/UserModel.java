@@ -37,7 +37,9 @@ public class UserModel {
     private String grado;
 
     @Column
-    private String profileImage;
+    @Lob
+    //private String profileImage;
+    private byte[] profileImage;
 
 
     @Column
@@ -110,11 +112,11 @@ public class UserModel {
         this.email = email;
     }
 
-    public String getProfileImage() {
+    public byte[] getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(String profileImage) {
+    public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
     }
 }

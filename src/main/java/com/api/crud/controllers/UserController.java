@@ -1,12 +1,15 @@
 package com.api.crud.controllers;
 
+import com.api.crud.models.ClasificadorModel;
 import com.api.crud.models.Detector;
 import com.api.crud.models.UserModel;
+import com.api.crud.repositories.ClasificadorRepository;
 import com.api.crud.services.ServicioDeAlmacenamiento;
 
 import com.api.crud.services.UserService;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -39,6 +42,9 @@ public class UserController {
 
     @Autowired
     ServicioDeAlmacenamiento servicioDeAlmacenamiento;
+
+    @Autowired
+    ClasificadorRepository clasificadorRepository;
 
 
 
@@ -82,7 +88,19 @@ public class UserController {
         return this.userService.getById(id);
     }
 
+    @PostMapping(path = "/clasificador", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> setClasificador(
+            @RequestPart("clasificador") MultipartFile clasificador) throws IOException {
 
+        byte[] bytes = clasificador.getBytes();
+        ClasificadorModel nuevoClasificador = new ClasificadorModel();
+        nuevoClasificador.setClasificador(bytes);
+        clasificadorRepository.save(nuevoClasificador);
+
+
+        String mensaje = "{\"mensaje\": \"Datos actualizados con éxito\"}";
+        return ResponseEntity.ok().body(mensaje);
+    }
 
 
     @PostMapping(value = "/edit/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -94,10 +112,11 @@ public class UserController {
 
         if(photo != null){
             // Guardar la imagen en tu servidor y obtener la ruta
-            String imagePath = saveImage(photo, id);
+            //String imagePath = saveImage(photo, id);
+            byte[] imagebyte = saveImageByte(photo);
             // Actualizar el UserModel con la ruta de la imagen
-            if(!imagePath.isEmpty()){
-                user.setProfileImage(imagePath);
+            if(imagebyte != null){
+                user.setProfileImage(imagebyte);
             }
             else{
                 userService.saveUser(user);
@@ -110,6 +129,10 @@ public class UserController {
         String mensaje = "{\"mensaje\": \"Datos actualizados con éxito\"}";
         return ResponseEntity.ok().body(mensaje);
 
+    }
+
+    public byte[] saveImageByte(MultipartFile image){
+        return servicioDeAlmacenamiento.guardarArchivoByte(image);
     }
 
     // Método para guardar la imagen y obtener la ruta
@@ -144,11 +167,12 @@ public class UserController {
     @GetMapping("/getPhoto/{id}")
     public ResponseEntity<Resource> getImagen(@PathVariable Integer id) {
 
-        String imagePath = userService.getById(id).get().getProfileImage();
+        byte[] imagePath = userService.getById(id).get().getProfileImage();
 
         try {
             //Resource resource = new ClassPathResource(imagePath);
-            Resource resource = new UrlResource("file:" + "src/main/resources/" + imagePath);
+            //Resource resource = new UrlResource("file:" + "src/main/resources/" + imagePath);
+            ByteArrayResource resource = new ByteArrayResource(imagePath);
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_JPEG)
                     .body(resource);
@@ -157,5 +181,6 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 }

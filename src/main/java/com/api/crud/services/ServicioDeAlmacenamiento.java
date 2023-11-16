@@ -21,6 +21,20 @@ public class ServicioDeAlmacenamiento {
     // Define la ruta donde se guardarán las imagenes
     private final String DIRECTORIO_DE_IMAGENES = "src/main/resources/imagenes/";
 
+    public byte[] guardarArchivoByte(MultipartFile image) {
+        if(!image.isEmpty()){
+            try {
+                // Analizar imagen
+                return detector.containsFaceByte(image.getBytes());
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+
+
     public boolean guardarArchivo(MultipartFile nuevaImagen, Integer id) throws IOException {
         if(!nuevaImagen.isEmpty()){
             try {
@@ -40,6 +54,9 @@ public class ServicioDeAlmacenamiento {
         //Path path = Paths.get(id + ".jpg");
         Files.write(path, bytes);
         return path.toUri().getPath();
+    }
+    private byte[] crearBytes(MultipartFile nuevaImagen) throws IOException {
+        return nuevaImagen.getBytes();
     }
 
     private boolean analizarImagen(String nuevaImagen, Integer id){
@@ -74,5 +91,6 @@ public class ServicioDeAlmacenamiento {
         }
         return false;
     }
+
 
 }
