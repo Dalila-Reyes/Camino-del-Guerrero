@@ -1,5 +1,6 @@
 package com.api.crud.controllers;
 
+import com.api.crud.models.Detector;
 import com.api.crud.models.UserModel;
 import com.api.crud.services.ServicioDeAlmacenamiento;
 
@@ -21,7 +22,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:5173/", "http://127.0.0.1:5173/"})
+@CrossOrigin(origins = {"http://localhost:5173/", "http://127.0.0.1:5173/",
+                        "https://dalila-reyes.github.io/Frontend/",
+                        "https://dalila-reyes.github.io/",
+                        "https://dalila-reyes.github.io/ListaAlumnos",
+                        "https://dalila-reyes.github.io/Register",
+                        "https://dalila-reyes.github.io/Login",
+                        "https://dalila-reyes.github.io/assets/index-db0db791.js",
+                        "https://dalila-reyes.github.io/assets/index-83a5a68a.css",
+                        "https://dalila-reyes.github.io/vite.svg"})
 
 public class UserController {
 
@@ -30,7 +39,6 @@ public class UserController {
 
     @Autowired
     ServicioDeAlmacenamiento servicioDeAlmacenamiento;
-
 
 
 
@@ -62,11 +70,7 @@ public class UserController {
     public ResponseEntity<String> saveUser(@RequestBody UserModel user){
         this.userService.saveUser(user);
 
-        String mensaje = """
-                    {
-                        "mensaje": "Datos actualizados con éxito"
-                    }
-                    """;
+        String mensaje = "{ \"mensaje\": \"Datos actualizados con éxito\"}";
         return ResponseEntity.ok().body(mensaje);
     }
 
@@ -97,22 +101,13 @@ public class UserController {
             }
             else{
                 userService.saveUser(user);
-                String mensaje = """
-                    {
-                        "status": "Error",
-                        "mensaje": "Elige una foto con tu rostro"
-                    }
-                    """;
+                String mensaje = "{\"status\": \"Error\",\"mensaje\": \"Elige una foto con tu rostro\"}";
                 return ResponseEntity.ok().body(mensaje);
             }
         }
 
         userService.saveUser(user);
-        String mensaje = """
-                    {
-                        "mensaje": "Datos actualizados con éxito"
-                    }
-                    """;
+        String mensaje = "{\"mensaje\": \"Datos actualizados con éxito\"}";
         return ResponseEntity.ok().body(mensaje);
 
     }

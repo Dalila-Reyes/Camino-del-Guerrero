@@ -33,11 +33,26 @@ public class UserModel {
     private String contraseña;
     @Column
     private String email;
+
+    private String grado;
+
     @Column
     private String profileImage;
 
 
+    @Column
+    private Boolean rol;
 
+    @Column
+    private Boolean estado;
+
+    public Boolean isRol() {
+        return rol;
+    }
+
+    public void setRol(Boolean rol) {
+        this.rol = rol;
+    }
 
     public Integer getId() {
         return id;

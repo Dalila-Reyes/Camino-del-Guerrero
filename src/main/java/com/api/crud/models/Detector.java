@@ -9,6 +9,9 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.objdetect.CascadeClassifier;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 
 @Component
 public class Detector {
@@ -29,12 +32,20 @@ public class Detector {
         System.out.println(Core.VERSION);
 
         Mat image = Imgcodecs.imread(imagePath);
-        CascadeClassifier faceDetector = new CascadeClassifier("Clasificador/haarcascade_frontalface_default.xml");
+        //CascadeClassifier faceDetector = new CascadeClassifier("app/src/main/resources/imagenes/haarcascade_frontalface_default.xml");
+        CascadeClassifier faceDetector = new CascadeClassifier("clasificador/haarcascade_frontalface_default.xml");
+        //CascadeClassifier faceDetector = new CascadeClassifier("haarcascade_frontalface_default.xml");
 
         MatOfRect faceDetections = new MatOfRect();
         faceDetector.detectMultiScale(image, faceDetections);
 
         return faceDetections.toArray().length > 0;
+    }
+
+
+    public String archivoExiste(String ruta){
+
+        return Files.exists(Path.of(ruta)) ? "Si existe" : "No existe";
     }
 
 }

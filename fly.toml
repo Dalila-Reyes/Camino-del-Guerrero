@@ -1,0 +1,21 @@
+# fly.toml app configuration file generated for camino-del-guerrero-api on 2023-11-15T20:48:42-06:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "camino-del-guerrero-api"
+primary_region = "gdl"
+
+[build]
+
+[[mounts]]
+  source = "imagenes"
+  destination = "app/src/main/resources/imagenes"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

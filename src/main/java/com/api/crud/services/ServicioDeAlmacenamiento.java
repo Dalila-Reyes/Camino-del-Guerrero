@@ -37,6 +37,7 @@ public class ServicioDeAlmacenamiento {
     private String guardarEnLocal(MultipartFile nuevaImagen, Integer id) throws IOException {
         byte[] bytes = nuevaImagen.getBytes();
         Path path = Paths.get(DIRECTORIO_DE_IMAGENES + id + ".jpg");
+        //Path path = Paths.get(id + ".jpg");
         Files.write(path, bytes);
         return path.toUri().getPath();
     }
@@ -44,6 +45,7 @@ public class ServicioDeAlmacenamiento {
     private boolean analizarImagen(String nuevaImagen, Integer id){
         // Ruta actual del archivo
         String nombreActual = DIRECTORIO_DE_IMAGENES + "0.jpg";
+        //String nombreActual = "0.jpg";
 
 
         // Nuevo nombre del archivo
