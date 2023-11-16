@@ -72,6 +72,17 @@ public class UserController {
         return this.userService.getUsers();
     }
 
+    @PostMapping(path="update")
+    public ResponseEntity<String> updateUser(@RequestBody UserModel user){
+        UserModel nuevoDB = userService.getById(user.getId()).get();
+        user.setProfileImage(nuevoDB.getProfileImage());
+
+        this.userService.saveUser(user);
+
+        String mensaje = "{ \"mensaje\": \"Datos actualizados con éxito\"}";
+        return ResponseEntity.ok().body(mensaje);
+    }
+
     @PostMapping
     public ResponseEntity<String> saveUser(@RequestBody UserModel user){
         this.userService.saveUser(user);
@@ -119,7 +130,7 @@ public class UserController {
                 user.setProfileImage(imagebyte);
             }
             else{
-                userService.saveUser(user);
+
                 String mensaje = "{\"status\": \"Error\",\"mensaje\": \"Elige una foto con tu rostro\"}";
                 return ResponseEntity.ok().body(mensaje);
             }
